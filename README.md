@@ -1,7 +1,18 @@
 # Connect Four
 
-By Javier Garcia Ramirez (android-47)
-Sat. Mar 27, 2021
+Author: Javier Garcia Ramirez (android-47)
+Last updated: Sat. Mar 27, 2021
+
+### FEATURES
+* Creates board using a dynamic 2D array
+* User can create board size using command line arguments, or during runtime if there was an error
+* In 2 player mode, user(s) can play against each other
+* In 1 player mode, user can play against the computer and decide who goes first
+* A winner is declared as soon as 4 pieces of the same type are connected horizontally, vertically, or diagonally
+* A tie is declared if all columns are full of pieces
+* Board is printed in black and white after each turn
+* User(s) can decide to play again
+* Error handles all bad input by prompting the user again, including for command line arguments
 
 ## GAMEPLAY
 ### Board as a 20x20 Grid
