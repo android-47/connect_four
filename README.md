@@ -1,13 +1,13 @@
 # Connect Four
 
 By Javier Garcia Ramirez (android-47)
-Sun. Mar 14, 2021
+Sat. Mar 27, 2021
 
 ## GAMEPLAY
 ### Board as a 20x20 Grid
-![20x20 Grid](./images/20x20.png "Test")
+![20x20 Grid](./images/20x20.png "20x20 Grid")
 ### Diagonal Connection
-![Diagonal Connection](./images/diagonal.png "Test")
+![Diagonal Connection](./images/diagonal.png "Diagonal Connection")
 
 ### DESCRIPTION
 This is a program that allows the user(s) to play Connect Four in 1 player mode against the computer, where the user decides who goes 
@@ -33,6 +33,4 @@ g++ -std=c++11 connect_four.cpp
 ```
 
 ### KNOWN LIMITATIONS
-* In 1 player mode. The computer makes decisions very quickly and there is not that much spacing between the computer's turn 
-  and the human's turn, so it may be hard to notice the computer's move but by looking at the board from the end of the 
-  previous turn, it should clear up anything that may not be clear.
+* In 1 player mode. The computer makes decisions very quickly, so it may be hard to notice the computer's move but by looking at the board from the end of the previous turn, it should clear up anything that may not be clear.

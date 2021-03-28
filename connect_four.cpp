@@ -8,7 +8,6 @@
  ** Output: Game board after each turn and game results including winner.
 ****************************************************************************************/
 
-/*        COMPILE USING C++ 11     --->      g++ -std=c++11 connect_four.cpp        */
 
 #include <iostream>
 #include <string>
@@ -18,10 +17,9 @@
 #include <stdio.h>
 #include <ctime>    // included to allow time() to be used
 
-using namespace std;
 
 bool verify_arguements(int argc, char **argv);
-bool displayError(bool valid, int i, string word1, string word2, string word3);
+bool displayError(bool valid, int i, std::string word1, std::string word2, std::string word3);
 char **create_board(int rows, int columns);
 void play_game(char **board, int rows, int columns, int active_players);
 void displayGameResult(char **board, int columns, char piece, bool &game_over);
@@ -30,13 +28,12 @@ int getColumn(int full_col[], int columns, int active_players, char piece);
 void dropPiece(char **board, int rows, int columns, char piece, int full_col [], int active_players);
 void print_board(char **board, int rows, int columns);
 bool locate_piece(char **board, int rows, int columns, char piece);
-int check_horiz_vert(char **board, int rows, int columns, string direction, int i, int j, char piece, int count);
-int check_diagnal(char **board, int rows, int columns, string direction, int i, int j, char piece, int count);
-int promptUnsignedInt(string error_msg, string prompt, int min_constraint, int max_constraint);
+int check_horiz_vert(char **board, int rows, int columns, std::string direction, int i, int j, char piece, int count);
+int check_diagnal(char **board, int rows, int columns, std::string direction, int i, int j, char piece, int count);
+int promptUnsignedInt(std::string error_msg, std::string prompt, int min_constraint, int max_constraint);
 void addItem(int full_col[], int columns, int newValue);
 void swap(char &a, char &b);
 int generate_random(int min, int amount);
-
 
 
 int main(int argc, char **argv) {
@@ -59,24 +56,18 @@ int main(int argc, char **argv) {
 }
 
 
-/****************************************************************************************
- ** Function: verifies the command line arguemnets by parsing through it and detecting
- any errors and the type of error
- ** Description: at the start of the program
- ** Parameters: integer argc, character double pointer argv
- ** Pre-Conditions: must know the values of the command line arguements
- ** Post-Conditions: returns true if arguements valid
-****************************************************************************************/
+/*verifies the command line arguemnets by parsing through 
+it and detecting any errors and the type of error */
 bool verify_arguements(int argc, char **argv) {
     bool valid = true;
     if (argc != 4) {
-        cout << "ERROR: too many/few arguments" << endl;
+        std::cout << "ERROR: too many/few arguments" << std::endl;
         return false;
     }
-    string all[3] = { argv[1], argv[2], argv[3] };
+    std::string all[3] = { argv[1], argv[2], argv[3] };
 
     for (int i = 0; i < 3; i++) {
-        string word = all[i];
+        std::string word = all[i];
         for (int j = 0; j < word.length(); j++) {
             if (!('0' <= word[j] && word[j] <= '9')) { // if not a number
                 valid = displayError(false, i, all[0], all[1], all[2]);
@@ -89,14 +80,9 @@ bool verify_arguements(int argc, char **argv) {
 }
 
 
-/****************************************************************************************
- ** Function: displays/checks error from command line arguements accordingly
- ** Description: used if an error is located in the command line arguements
- ** Parameters: boolean valid, integer i, string word1, string word2, string word3
- ** Pre-Conditions: must have arguements as integers or the index of where the error is
- ** Post-Conditions: returns true if there are actually no errors
-****************************************************************************************/
-bool displayError(bool valid, int i, string word1, string word2, string word3) {
+/* displays/checks error from command line arguements accordingly 
+used if an error is located in the command line arguements */
+bool displayError(bool valid, int i, std::string word1, std::string word2, std::string word3) {
     int x = -1;
     if (valid == true){
         if (atoi(word1.c_str()) < 1 || 2 < atoi(word1.c_str()))
@@ -107,27 +93,18 @@ bool displayError(bool valid, int i, string word1, string word2, string word3) {
             x = 2;
     } if (valid == false || x != -1){
         if (i == 0 || x == 0)
-            cout << "ERROR: number of players is not 1 or 2" << endl;
+            std::cout << "ERROR: number of players is not 1 or 2" << std::endl;
         else if (i == 1 || x == 1)
-            cout << "ERROR: rows must be a number between 4-20" << endl;
+            std::cout << "ERROR: rows must be a number between 4-20" << std::endl;
         else if (i == 2 || x == 2)
-            cout << "ERROR: columns must be a number between 4-20" << endl;
+            std::cout << "ERROR: columns must be a number between 4-20" << std::endl;
         return false;
     }
     return valid;
 }
 
 
-/****************************************************************************************
- ** Function: assigns the dimensions of the board depending on if there were any errors
- in the command line arguements
- ** Description: at the start of each game
- ** Parameters: boolean valid_arg, boolean play_again, character double pointer argv,
- integer addresss active_players, integer address rows, integer address columns
- integer row, integer columns, character piece
- ** Pre-Conditions: must know if the command line arguements were valid
- ** Post-Conditions: assigns values to rows and columns
-****************************************************************************************/
+// assigns the dimensions of the board, even if there were no errors in the command line arguements
 void assignBoardDimensions(bool valid_arg, bool play_again, char **argv, int &active_players, int &rows, int &columns) {
     if (valid_arg == false || play_again == true) {
         active_players = promptUnsignedInt("ERROR: number of players is not 1 or 2;", "Enter how many players: ", 1, 2);
@@ -141,13 +118,6 @@ void assignBoardDimensions(bool valid_arg, bool play_again, char **argv, int &ac
 }
 
 
-/****************************************************************************************
- ** Function: creates the board for the game
- ** Description: used at the start of the game
- ** Parameters: integer row, integer columns
- ** Pre-Conditions: must have dimensions of board
- ** Post-Conditions: returns the 2-dimensional board
-****************************************************************************************/
 char **create_board(int rows, int columns) { // delete board function too
     char **board = new char*[rows];
 
@@ -163,15 +133,8 @@ char **create_board(int rows, int columns) { // delete board function too
 }
 
 
-/****************************************************************************************
- ** Function: operates game functions such as switching players after a turn, and calling
- the display game result function at the end of each turn
- ** Description: called once but used throughout the whole game
- ** Parameters: character double pointer board,
- integer row, integer columns, integer active_piece
- ** Pre-Conditions: must have dimensions of board and how many players there are
- ** Post-Conditions: the game must end through a tie or because there is a winner
-****************************************************************************************/
+/* operates game functions such as switching players after a turn, and calling the display game result 
+function at the end of each turn */
 void play_game(char **board, int rows, int columns, int active_players){
     int full_col[columns];
     bool game_over = false;
@@ -184,7 +147,7 @@ void play_game(char **board, int rows, int columns, int active_players){
             swap(player2_piece, player1_piece);
     }
     do {
-        cout << "* Player '" << player1_piece << "' turn *" << endl; // do they chose their pieces?
+        std::cout << "* Player '" << player1_piece << "' turn *" << std::endl; // do they chose their pieces?
         dropPiece(board, rows, columns, player1_piece, full_col, active_players);
         game_over = locate_piece(board, rows, columns, player1_piece);
 
@@ -194,17 +157,10 @@ void play_game(char **board, int rows, int columns, int active_players){
 }
 
 
-/****************************************************************************************
- ** Function: displays if there is a winner or if it is a tie
- ** Description: used at the end of each round
- ** Parameters: character double pointer board, integer columns, character piece, bool
- address game_over
- ** Pre-Conditions: must be at the end of the current player's turn
- ** Post-Conditions: if there is a winner or tie, prints the winner or tie
-****************************************************************************************/
+// displays if there is a winner or if it is a tie, used at the end of each round
 void displayGameResult(char **board, int columns, char piece, bool &game_over) {
     if (game_over == true)
-        cout << "GAME RESULT: Player '" << piece << "' wins" << endl;
+        std::cout << "GAME RESULT: Player '" << piece << "' wins" << std::endl;
     else {
         int count = 0;
         for (int j = 0; j < columns; j++) {
@@ -213,20 +169,14 @@ void displayGameResult(char **board, int columns, char piece, bool &game_over) {
             count++;
             if (count == columns) {
                 game_over = true; // tie
-                cout << "GAME RESULT: Tie " << endl;
+                std::cout << "GAME RESULT: Tie " << std::endl;
             }
         }
     }
 }
 
-/****************************************************************************************
- ** Function: gets valid column from computer/user
- ** Description: used whenever a piece is located
- ** Parameters: character double pointer board, integer columns, integer active_players,
- character piece
- ** Pre-Conditions: must know how many players there are and what columns are full
- ** Post-Conditions: returns where to drop piece
-****************************************************************************************/
+
+// gets valid column from computer/user
 int getColumn(int full_col[], int columns, int active_players, char piece) {
     bool error = false;
     int test2 = 0;
@@ -236,7 +186,7 @@ int getColumn(int full_col[], int columns, int active_players, char piece) {
         if (active_players == 1 && piece == 'X') // X is the piece for the computer
             test2 = generate_random(1, columns); // min, how many
         else
-            test2 = promptUnsignedInt("ERROR: select column (1-" + to_string(columns+1) + ") that is not full;", "Enter column number: ", 1, columns);
+            test2 = promptUnsignedInt("ERROR: select column (1-" + std::to_string(columns+1) + ") that is not full;", "Enter column number: ", 1, columns);
 
         test2--;
         for (int i = 0; i < columns; i++) {
@@ -249,19 +199,12 @@ int getColumn(int full_col[], int columns, int active_players, char piece) {
 }
 
 
-/****************************************************************************************
- ** Function: drops the piece in the appropriate spot in board
- ** Description: used whenever a column is generated/entered by user
- ** Parameters: character double pointer board, integer row, integer columns, character
- piece, integer array full_col[], integer active_players
- ** Pre-Conditions: must know where (column) to drop the piece
- ** Post-Conditions: board is updated
-****************************************************************************************/
+// drops the piece in the appropriate spot in board
 void dropPiece(char **board, int rows, int columns, char piece, int full_col [], int active_players) {
     int test2 = getColumn(full_col, columns, active_players, piece); // get where to drop piece
 
     // drop piece
-    for (int i = 0; i < rows; i++){
+    for (int i = 0; i < rows; i++) {
         if (board[i][test2] != ' ') { // must be an X or O
             board[i-1][test2] = piece;
             if (i-1 == 0) // checks if top collumn is full
@@ -275,41 +218,30 @@ void dropPiece(char **board, int rows, int columns, char piece, int full_col [],
 }
 
 
-/****************************************************************************************
- ** Function: prints the board
- ** Description: used at the start of the game and at the end of each player's turn
- ** Parameters: character double pointer board, integer row, integer columns
- ** Pre-Conditions: must have dimensions of board
- ** Post-Conditions: board must be printed
-****************************************************************************************/
-void print_board(char **board, int rows, int columns){
-   for (int i=0; i<rows; i++) {
-        cout << char(i+65) << " ";
-        for (int j=0; j<columns; j++) {
+
+void print_board(char **board, int rows, int columns) {
+   std:: cout << std::endl << std::endl; 
+   for (int i = 0; i < rows; i++) {
+        std::cout << char(i+65) << " ";
+        for (int j = 0; j < columns; j++) {
             if (i % 2 == 0 && j % 2 == 0)
-                cout << "|\033[30;47m " << board[i][j] << " ";
+                std::cout << "|\033[30;47m " << board[i][j] << " ";
             else if (i % 2 == 1 && j % 2 == 1)
-                cout << "|\033[30;47m " << board[i][j] << " ";
+                std::cout << "|\033[30;47m " << board[i][j] << " ";
             else
-                cout << "|\033[0m " << board[i][j] << " ";
-            cout << "\033[0m";
+                std::cout << "|\033[0m " << board[i][j] << " ";
+            std::cout << "\033[0m";
         }
-        cout << endl;
+        std::cout << std::endl;
     }
-    cout << "    ";
+    std::cout << "    ";
     for (int i = 0; i < columns; i++)
-        (i < 9) ? cout << i+1 << "   " : cout << i+1 << "  ";
-    cout << endl;
+        (i < 9) ? std::cout << i+1 << "   " : std::cout << i+1 << "  ";
+    std::cout << std::endl;
 }
 
-/****************************************************************************************
- ** Function: checks if there is a diagnal connect 4
- ** Description: used whenever a piece is located
- ** Parameters: character double pointer board,
- integer row, integer columns, character piece
- ** Pre-Conditions: must have dimensions of board
- ** Post-Conditions: returns true if there is a connect 4, false if not
-****************************************************************************************/
+
+// checks if there is a downward right OR left diagnal connect 4
 bool locate_piece(char **board, int rows, int columns, char piece) {
     int count = 0;
     int p = 0;
@@ -330,15 +262,8 @@ bool locate_piece(char **board, int rows, int columns, char piece) {
 }
 
 
-/****************************************************************************************
- ** Function: checks if there is a horizontal or vericle connect 4
- ** Description: used whenever a piece is located
- ** Parameters: character double pointer board, integer row, integer columns, string
- direction, integer i, integer j, character piece, integer count
- ** Pre-Conditions: must know i and j to know the location of the current piece
- ** Post-Conditions: return the amount of pieces found horizontally or vertically
-****************************************************************************************/
-int check_horiz_vert(char **board, int rows, int columns, string direction, int i, int j, char piece, int count) {
+// checks if there is a horizontal OR vericle connect 4
+int check_horiz_vert(char **board, int rows, int columns, std::string direction, int i, int j, char piece, int count) {
     while (board[i][j] == piece) {
         count++;
         if (count == 4)
@@ -354,15 +279,8 @@ int check_horiz_vert(char **board, int rows, int columns, string direction, int 
 }
 
 
-/****************************************************************************************
- ** Function: checks if there is a diagnal connect 4
- ** Description: used whenever a piece is located
- ** Parameters: character double pointer board, integer row, integer columns, string
- direction, integer i, integer j, character piece, integer count
- ** Pre-Conditions: must know i and j to know the location of the current piece
- ** Post-Conditions: return the amount of pieces found diagonally
-****************************************************************************************/
-int check_diagnal(char **board, int rows, int columns, string direction, int i, int j, char piece, int count) {
+// checks if there is a diagnal connect 4
+int check_diagnal(char **board, int rows, int columns, std::string direction, int i, int j, char piece, int count) {
     int TEST = 1;
 
     if (direction == "left")
@@ -379,20 +297,15 @@ int check_diagnal(char **board, int rows, int columns, string direction, int i, 
     return count;
 }
 
-/****************************************************************************************
- ** Function: prompt for an integar and check if it is a positive number
- ** Description: used throughtout the whole game
- ** Parameters: string error_message, string prompt, integer min_contraint, integer max_constraint
- ** Pre-Conditions: must know the max and min numbers possible
- ** Post-Conditions: returns the integer if it is equal to or greater than 0
-****************************************************************************************/
-int promptUnsignedInt(string error_msg, string prompt, int min_constraint, int max_constraint) {
+
+// prompt for an integar and check if it is a positive number
+int promptUnsignedInt(std::string error_msg, std::string prompt, int min_constraint, int max_constraint) {
     int test_int = -2;
-    string test_str = "";
+    std::string test_str = "";
 
     do {
-        test_int == -2 ? cout << prompt : cout << error_msg << " " << prompt; // only -2 once, for the first prompt
-        getline(cin, test_str);
+        test_int == -2 ? std::cout << prompt : std::cout << error_msg << " " << prompt; // only -2 once, for the first prompt
+        getline(std::cin, test_str);
 
         for (int i = 0; i < test_str.length(); i++) {
             if (!('0' <= test_str[i] && test_str[i] <= '9')) // if not a number
@@ -405,13 +318,7 @@ int promptUnsignedInt(string error_msg, string prompt, int min_constraint, int m
 }
 
 
-/****************************************************************************************
- ** Function: appends an item to the array
- ** Description: used when a column gets full to keep track of it
- ** Parameters: integer array full_col[], integer columns, interger newValue
- ** Pre-Conditions: must know array and it must be an integer
- ** Post-Conditions: array is updated with new value
-****************************************************************************************/
+// appends an item to the array, used when a column gets full to keep track of it
 void addItem(int full_col[], int columns, int newValue) {
     for (int i = 0; i < columns; i++) {
         if (full_col[i] == -1){
@@ -422,13 +329,7 @@ void addItem(int full_col[], int columns, int newValue) {
 }
 
 
-/****************************************************************************************
- ** Function: swaps values of arguements
- ** Description: used at the end of each player's turn to change pieces
- ** Parameters: character address a, character address b
- ** Pre-Conditions: a and b must be characters
- ** Post-Conditions: a and b and flipped
-****************************************************************************************/
+// swaps values of arguements
 void swap(char &a, char &b){
     int copy_a = a;
     a = b;
@@ -436,13 +337,7 @@ void swap(char &a, char &b){
 }
 
 
-/****************************************************************************************
- ** Function: generate a random number for player(s) and dealer
- ** Description: used to generate computer's column selection
- ** Parameters: integer min, integer amoubt
- ** Pre-Conditions: must know the amount of columns in grid
- ** Post-Conditions: return a random number appropriate for the grid
-****************************************************************************************/
+// used to generate computer's column selection
 int generate_random(int min, int amount) {
     int random_number;
     random_number = rand() % amount + min; // % how many numbers + min
